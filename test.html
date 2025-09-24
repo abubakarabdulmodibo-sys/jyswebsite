@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>lightning mcqueen speed sim ^^</title>
+
+  <link rel="stylesheet" href="test.css">
+
+  <style>
+    body {
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: black;
+    }
+    #game {
+      position: relative;
+      width: 600px;
+      height: 400px;
+      background: #111;
+      overflow: hidden;
+      border: 2px solid white;
+    }
+    #cube {
+      position: absolute;
+      width: 300px;
+      height: 200px;
+      background: transparent; /* invisible box */
+      left: 100px;
+      top: 100px;
+    }
+    #cube img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      transform: scaleX(1); /* default: facing left */
+      transition: transform 0.1s ease; /* smooth flip */
+    }
+  </style>
+</head>
+<body>
+  <div id="game">
+    <div id="cube">
+      <!-- Replace with your image -->
+      <img id="character" src="lightning-mcqueen-mater-cars-cartoon-mcqueen.jpg" alt="Character">
+    </div>
+
+        <div class="arrow" id="arrow-left"></div>
+    <div class="arrow" id="arrow-right"></div>
+    <div class="arrow" id="arrow-up"></div>
+    <div class="arrow" id="arrow-down"></div>
+
+  </div>
+  
+
+  <script>
+    const cube = document.getElementById("cube");
+    const game = document.getElementById("game");
+    const character = document.getElementById("character");
+
+    let x = 100, y = 100;
+    const speed = 10; // movement speed
+    const cubeSize = 50;
+    const gameWidth = game.clientWidth;
+    const gameHeight = game.clientHeight;
+
+    // Track keys
+    const keys = { w: false, a: false, s: false, d: false };
+
+    // Direction state (1 = left, -1 = right)
+    let facing = 1; // start facing left
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key in keys) keys[e.key] = true;
+    });
+
+    document.addEventListener("keyup", (e) => {
+      if (e.key in keys) keys[e.key] = false;
+    });
+
+    function update() {
+      let dx = 0, dy = 0;
+
+      if (keys.w) dy -= 1;
+      if (keys.s) dy += 1;
+      if (keys.a) {
+        dx -= 1;
+        facing = 1; // left
+      }
+      if (keys.d) {
+        dx += 1;
+        facing = -1; // right
+      }
+
+      // Normalize diagonal movement
+      if (dx !== 0 || dy !== 0) {
+        const len = Math.sqrt(dx * dx + dy * dy);
+        dx /= len;
+        dy /= len;
+      }
+
+      x += dx * speed;
+      y += dy * speed;
+
+      // Apply facing direction
+      character.style.transform = `scaleX(${facing})`;
+
+      // Wrap-around logic
+      if (x < -cubeSize) x = gameWidth;
+      if (x > gameWidth) x = -cubeSize;
+      if (y < -cubeSize) y = gameHeight;
+      if (y > gameHeight) y = -cubeSize;
+
+      cube.style.left = x + "px";
+      cube.style.top = y + "px";
+
+      requestAnimationFrame(update);
+    }
+
+    update(); // start loop
+  </script>
+
+  <script src="test.js"></script>
+
+</body>
+</html>
